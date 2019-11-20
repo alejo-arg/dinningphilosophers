@@ -1,13 +1,13 @@
-import time
 import random
-import threading
+from threading import Thread, Lock, Semaphore
+import time
 
 N = 5
 TIEMPO_TOTAL = 3
 
 
-class Filosofo(threading.Thread):
-    semaforo = threading.Lock()  # SEMAFORO BINARIO ASEGURA LA EXCLUSION MUTUA
+class Filosofo(Thread):
+    semaforo = Lock()  # SEMAFORO BINARIO ASEGURA LA EXCLUSION MUTUA
     estado = []  # PARA CONOCER EL ESTADO DE CADA FILOSOFO
     tenedores = []  # ARRAY DE SEMAFOROS PARA SINCRONIZAR ENTRE FILOSOFOS, MUESTRA QUIEN ESTA EN COLA DEL TENEDOR
     count = 0
@@ -17,7 +17,7 @@ class Filosofo(threading.Thread):
         self.id = Filosofo.count  # DESIGNA EL ID AL FILOSOFO
         Filosofo.count += 1  # AGREGA UNO A LA CANT DE FILOSOFOS
         Filosofo.estado.append('PENSANDO')  # EL FILOSOFO ENTRA A LA MESA EN ESTADO PENSANDO
-        Filosofo.tenedores.append(threading.Semaphore(0))  # AGREGA EL SEMAFORO DE SU TENEDOR( TENEDOR A LA IZQUIERDA)
+        Filosofo.tenedores.append(Semaphore(0))  # AGREGA EL SEMAFORO DE SU TENEDOR( TENEDOR A LA IZQUIERDA)
         print("FILOSOFO {0} - PENSANDO".format(self.id))
 
     def __del__(self):
@@ -33,8 +33,8 @@ class Filosofo(threading.Thread):
         return (i + 1) % N  # BUSCAMOS EL INDICE DE LA IZQUIERDA
 
     def verificar(self, i):
-        if Filosofo.estado[i] == 'HAMBRIENTO' and Filosofo.estado[self.izquierda(i)] != 'COMIENDO' and Filosofo.estado[
-            self.derecha(i)] != 'COMIENDO':
+        if Filosofo.estado[i] == 'HAMBRIENTO' and Filosofo.estado[self.izquierda(i)] != 'COMIENDO' and Filosofo.estado[ \
+                self.derecha(i)] != 'COMIENDO':
             Filosofo.estado[i] = 'COMIENDO'
             Filosofo.tenedores[
                 i].release()  # SI SUS VECINOS NO ESTAN COMIENDO AUMENTA EL SEMAFORO DEL TENEDOR Y CAMBIA SU ESTADO A
