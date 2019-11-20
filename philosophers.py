@@ -1,8 +1,8 @@
-import random
+from random import randint
 from threading import Thread, Lock, Semaphore
-import time
+from time import sleep
 
-N = 5
+N = 2
 TIEMPO_TOTAL = 3
 
 
@@ -24,7 +24,7 @@ class Filosofo(Thread):
         print("FILOSOFO {0} - Se para de la mesa".format(self.id))  # NECESARIO PARA SABER CUANDO TERMINA EL THREAD
 
     def pensar(self):
-        time.sleep(random.randint(0, 5))  # CADA FILOSOFO SE TOMA DISTINTO TIEMPO PARA PENSAR, ALEATORIO
+        sleep(randint(0, 20))  # CADA FILOSOFO SE TOMA DISTINTO TIEMPO PARA PENSAR, ALEATORIO
 
     def derecha(self, i):
         return (i - 1) % N  # BUSCAMOS EL INDICE DE LA DERECHA
@@ -56,8 +56,8 @@ class Filosofo(Thread):
 
     def comer(self):
         print("FILOSOFO {} COMIENDO".format(self.id))
-        time.sleep(2)  # TIEMPO ARBITRARIO PARA COMER
-        print("FILOSOFO {} TERMINO DE COMER".format(self.id))
+        sleep(randint(0, 10))  # TIEMPO ARBITRARIO PARA COMER
+        print("FILOSOFO {} PENSANDO".format(self.id))
 
     def run(self):
         for i in range(TIEMPO_TOTAL):
