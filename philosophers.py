@@ -3,7 +3,7 @@ from threading import Thread, Lock, Semaphore
 from time import sleep
 
 N = 2
-TIEMPO_TOTAL = 3
+TIEMPO_TOTAL = 2
 
 
 class Filosofo(Thread):
@@ -18,7 +18,7 @@ class Filosofo(Thread):
         Filosofo.count += 1  # AGREGA UNO A LA CANT DE FILOSOFOS
         Filosofo.estado.append('PENSANDO')  # EL FILOSOFO ENTRA A LA MESA EN ESTADO PENSANDO
         Filosofo.tenedores.append(Semaphore(0))  # AGREGA EL SEMAFORO DE SU TENEDOR( TENEDOR A LA IZQUIERDA)
-        print("FILOSOFO {0} - PENSANDO".format(self.id))
+        print("FILOSOFO {} - PENSANDO".format(self.id))
 
     def __del__(self):
         print("FILOSOFO {0} - Se para de la mesa".format(self.id))  # NECESARIO PARA SABER CUANDO TERMINA EL THREAD
@@ -36,8 +36,8 @@ class Filosofo(Thread):
         if Filosofo.estado[i] == 'HAMBRIENTO' and Filosofo.estado[self.izquierda(i)] != 'COMIENDO' and Filosofo.estado[ \
                 self.derecha(i)] != 'COMIENDO':
             Filosofo.estado[i] = 'COMIENDO'
-            Filosofo.tenedores[
-                i].release()  # SI SUS VECINOS NO ESTAN COMIENDO AUMENTA EL SEMAFORO DEL TENEDOR Y CAMBIA SU ESTADO A
+            Filosofo.tenedores[i].release()
+            # SI SUS VECINOS NO ESTAN COMIENDO AUMENTA EL SEMAFORO DEL TENEDOR Y CAMBIA SU ESTADO A
             # COMIENDO
 
     def tomar(self):
@@ -50,6 +50,7 @@ class Filosofo(Thread):
     def soltar(self):
         Filosofo.semaforo.acquire()  # SEÑALA QUE SOLTARA LOS TENEDORES
         Filosofo.estado[self.id] = 'PENSANDO'
+        print("FILOSOFO {} PENSANDO".format(self.id))
         self.verificar(self.izquierda(self.id))
         self.verificar(self.derecha(self.id))
         Filosofo.semaforo.release()  # YA TERMINO DE MANIPULAR TENEDORES
@@ -57,7 +58,6 @@ class Filosofo(Thread):
     def comer(self):
         print("FILOSOFO {} COMIENDO".format(self.id))
         sleep(randint(0, 10))  # TIEMPO ARBITRARIO PARA COMER
-        print("FILOSOFO {} PENSANDO".format(self.id))
 
     def run(self):
         for i in range(TIEMPO_TOTAL):
